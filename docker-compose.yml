@@ -19,7 +19,9 @@ services:
     networks:
       - front-tier
       - back-tier
-      
+    labels:
+      description: "Frontend for user voting"  
+
   result:
     build:
       context: ./result
@@ -33,6 +35,8 @@ services:
     networks:
       - front-tier
       - back-tier
+    labels:
+      description: "Frontend to view result"
 
   worker:
     build:
@@ -45,6 +49,8 @@ services:
         condition: service_healthy 
     networks:
       - back-tier
+    labels:
+      description: "Backend to get votes from redis and stores in db"
 
   redis:
     image: redis:alpine
@@ -55,6 +61,8 @@ services:
       interval: 5s
     networks:
       - back-tier
+    labels:
+      description: "Collecting new votes"
       
   postgres:
     image: postgres:15-alpine
@@ -73,6 +81,9 @@ services:
       back-tier:
         aliases:
           - db
+    restart: always
+    labels:
+      description: "Persistent storage for votes"
 
   seed-data:
     build:
@@ -85,7 +96,9 @@ services:
     networks:
       - front-tier
     restart: "no"
-      
+    labels:
+      description: "One-time database population"  
+
 networks:
    front-tier:
    back-tier:
